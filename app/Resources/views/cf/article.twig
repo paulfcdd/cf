@@ -1,0 +1,108 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <style>
+        .delete-comment, .edit-comment, .save-comment {
+            cursor: pointer;
+        }
+    </style>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="article">
+                    <ul class="list-unstyled list-inline">
+                        <li><i class="fa fa-calendar"></i>{{ article.addingDate }}</li>
+                        <li><i class="fa fa-user"></i>{{ article.author }}</li>
+                        <li><i class="fa fa-comments"></i>{{ commentNumber }} Comments</li>
+                    </ul>
+                    <hr>
+                    <div class="article-content">
+                        {{ article.content }}
+                    </div>
+                    <hr>
+                    <div class="form">
+                        {{ form_start(form, {'attr':{'action': path('add_comment')}}) }}
+                        <div class="form-group">
+                            <label for="form_name">Your name:</label>
+                            {{ form_widget(form.name, {'attr':{'class':'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            <label for="form_content">Your comment:</label>
+                            {{ form_widget(form.content,{'attr':{'class':'form-control', 'pattern':'.{3,500}'}}) }}
+                        </div>
+                        <input value="{{ article.id }}" name="articleId" type="hidden">
+                        {{ form_end(form) }}
+                    </div>
+                    <hr>
+                    <br>
+                </div>
+                <div class="comments">
+                    {% for comment in comments %}
+                        <div class="well">
+                            <ul class="list-unstyled list-inline pull-left">
+                                <li><i class="fa fa-user"></i>{{ comment.name }}</li>
+                                <li><i class="fa fa-user"></i>{{ comment.date }}</li>
+                            </ul>
+                            <ul class="list-unstyled list-inline pull-right">
+                                <li><span class="glyphicon glyphicon-edit edit-comment" onclick="editComment({{ comment.id }})"></span></li>
+                                <li><span class="glyphicon glyphicon-remove delete-comment" onclick="deleteComment({{ comment.id }})"></span></li>
+                            </ul>
+                            <hr>
+                           <div class="comment-content">
+                              <div id="original">
+                                  {% autoescape %}
+                                      {{ comment.content|raw }}
+                                  {% endautoescape %}
+                              </div>
+                               <div id="modifyied">
+                                   <label for="modifyiedComment">Edit comment</label>
+                                   <span class="glyphicon glyphicon-floppy-disk save-comment"
+                                   onclick="saveComment({{ comment.id }})"></span>
+                                   <textarea class="form-control" id="modifyiedComment">
+                                           {{ comment.content }}
+                                   </textarea>
+                               </div>
+                           </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#modifyied").hide();
+        function editComment() {
+            $("#original").hide();
+            $("#modifyied").show();
+
+        }
+
+        function saveComment(id) {
+            var content = $('#modifyiedComment').val();
+            $.ajax({
+                url: '{{ path('edit_comment') }}',
+                method: 'post',
+                data: {
+                    id,
+                    content
+                },
+                success: function () {
+                    location.reload()
+                }
+            });
+        }
+
+        function deleteComment(id) {
+            $.ajax({
+                url: '{{ path('delete_comment') }}',
+                method: 'post',
+                data: {
+                    id
+                },
+                success: function () {
+                    location.reload();
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,7 @@
+test_app:
+    resource: "@TestAppBundle/Resources/config/routing.yml"
+    prefix:   /
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation

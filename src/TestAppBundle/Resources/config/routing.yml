@@ -1,0 +1,19 @@
+home:
+    path:     /
+    defaults: { _controller: TestAppBundle:Index:index }
+
+article:
+    path: /article/id{id}
+    defaults: { _controller: TestAppBundle:Article:index }
+
+add_comment:
+    path: /add_comment
+    defaults: { _controller: TestAppBundle:Article:getComment }
+
+delete_comment:
+    path: /delete_comment
+    defaults: { _controller: TestAppBundle:Article:deleteComment }
+
+edit_comment:
+    path: /edit_comment
+    defaults: { _controller: TestAppBundle:Article:editComment }
