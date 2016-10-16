@@ -6,7 +6,7 @@ parameters:
 services:
      add_comment:
          class: TestAppBundle\Service\AddComment
-         arguments: ["@doctrine.orm.entity_manager", "@logger","@router"]
+         arguments: ["@doctrine.orm.entity_manager", "@logger","@router", "@markdown.parser"]
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

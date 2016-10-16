@@ -5,7 +5,6 @@ namespace TestAppBundle\Service;
 use Doctrine\ORM\EntityManager;
 use Michelf\Markdown;
 use Symfony\Bridge\Monolog\Logger;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use TestAppBundle\Entity\Comment;
 
@@ -15,31 +14,30 @@ class AddComment
    public $em;
    public $logger;
    public $router;
+   public $markdown;
 
-   public function __construct(EntityManager $entityManager, Logger $logger, RouterInterface $router)
+   public function __construct(EntityManager $entityManager, Logger $logger, RouterInterface $router, Markdown $markdown)
    {
       $this->em = $entityManager;
       $this->logger = $logger;
       $this->router = $router;
+      $this->markdown = $markdown;
    }
 
    public function writeData($data){
-      $markdown = new Markdown();
-      
+
       $form = $data['form'];
       $articleId = $data['articleId'];
       $name = $form['name'];
       $content = $form['content'];
       $date = date('d-m-Y G:i');
 
-
-      $markdown->transform($content);
-
       $comment = new Comment();
       $comment->setArticleId($articleId);
       $comment->setName($name);
       $comment->setDate($date);
-      $comment->setContent($markdown->transform($content));
+      $comment->setContent($this->markdown->transform($content));
+
       $this->em->persist($comment);
       try {
          $this->em->flush();
@@ -65,9 +63,8 @@ class AddComment
    }
    
    public function editComment($id, $content){
-      $markdown = new Markdown();
       $comment = $this->em->getRepository('TestAppBundle:Comment')->find($id);
-      $comment->setContent($markdown->transform($content));
+      $comment->setContent($this->markdown->transform($content));
       try{
          $this->em->flush();
          $this->logger->addInfo('Comment was edited');

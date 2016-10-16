@@ -44,25 +44,46 @@
                                 <li><i class="fa fa-user"></i>{{ comment.date }}</li>
                             </ul>
                             <ul class="list-unstyled list-inline pull-right">
-                                <li><span class="glyphicon glyphicon-edit edit-comment" onclick="editComment({{ comment.id }})"></span></li>
-                                <li><span class="glyphicon glyphicon-remove delete-comment" onclick="deleteComment({{ comment.id }})"></span></li>
+                                <li><span class="glyphicon glyphicon-edit edit-comment" data-toggle="modal"
+                                          data-target="#{{ comment.id }}"></span></li>
+                                <li><span class="glyphicon glyphicon-remove delete-comment"
+                                          onclick="deleteComment({{ comment.id }})"></span></li>
                             </ul>
                             <hr>
-                           <div class="comment-content">
-                              <div id="original">
-                                  {% autoescape %}
-                                      {{ comment.content|raw }}
-                                  {% endautoescape %}
-                              </div>
-                               <div id="modifyied">
-                                   <label for="modifyiedComment">Edit comment</label>
-                                   <span class="glyphicon glyphicon-floppy-disk save-comment"
-                                   onclick="saveComment({{ comment.id }})"></span>
-                                   <textarea class="form-control" id="modifyiedComment">
-                                           {{ comment.content }}
-                                   </textarea>
-                               </div>
-                           </div>
+                            <div class="comment-content">
+                                <div id="original">
+                                    {% autoescape %}
+                                        {{ comment.content|raw }}
+                                    {% endautoescape %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="{{ comment.id }}" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Edit comment #{{ comment.id }}</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <textarea class="form-control" id="modify{{ comment.id }}">
+                                                {% autoescape %}
+                                                    {{ comment.content|raw }}
+                                                {% endautoescape %}
+                                        </textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-success"
+                                                data-dismiss="modal" onclick="saveComment({{ comment.id }})">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
@@ -70,15 +91,10 @@
         </div>
     </div>
     <script>
-        $("#modifyied").hide();
-        function editComment() {
-            $("#original").hide();
-            $("#modifyied").show();
-
-        }
 
         function saveComment(id) {
-            var content = $('#modifyiedComment').val();
+            var content = $('#modify'+id).val();
+            console.log(content);
             $.ajax({
                 url: '{{ path('edit_comment') }}',
                 method: 'post',
